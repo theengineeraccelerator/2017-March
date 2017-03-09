@@ -1,0 +1,109 @@
+LPE Inverter Mark 1 Definition
+
+
+Introduction
+A rudimentary one-directional inverter that contains a DC-DC converter, a DC-AC inverter, and an AC-AC step-up transformer to maintain a steady output with a variable input. The inverter shall report measured input battery voltage and output voltage to a wired device (a computer). The device shall be able to check the status and turn the inverter on/off. 
+
+
+Conventions
+??: A To-Be-Determined requirement. 
+[ ... ]: Future Feature. 
+
+Product Characteristics
+    - Weight: < 2 lbs.
+    - Height (X): < 5 cm
+    - Length (Y): < 20 cm
+    - Width (Z): < 20 cm
+    - Target Cost: < $150
+    - Product Life Time Target: 6 months
+    - Operating Temperature: 0 degree C to 60 degree C
+    - Must be able to take a variable DC voltage intput
+    - Must be able to produce a constant AC voltage output
+    - Must be able to be turned off as the battery is depleted
+    - Must be able to realtime status of the input and output V.
+
+
+
+
+INSERT DEVICE 1 NAME
+Feature List
+   FEATURE 1: DC-DC Converter
+    Characteristics
+        - Takes in nominal 12V input
+            - Input via 3* 3.4Ah 18650 Panasonic cells in series
+	    - Range from 9V to 12 (Voltage per cell is 3V - 4V)
+    	- Constant 12VDC output 
+	- A buck-boost converter
+   
+   Feature 2: DC-AC Inverter
+    Characteristics
+	-Takes in constant 12VDC input
+	-Constant 18VAC Output
+	-Constant 60 +/- 1 Hz Output
+	-Can Turn ON/OFF if given command by the processor
+
+   Feature 3: AC-AC Step Down Transformer
+    Characteristics
+	-Takes in 18VAC 60Hz Input
+	-Constant 12VAC +/-1VAC 60Hz +/-1 Hz Output
+
+   Feature 4: Central Processor
+    Characteristics
+	-Programmable microcontroller (Arduino)
+	-Reads in voltage at inverter input and output
+	-Reads in frequency at output
+	-Can send voltage data to a wired device for viewing
+	-Can recieve commands from a wired device
+	-Can send an ON or OFF signal to the inverter
+   
+   Feature 5: Power Regulator
+    Characteristics
+	-Takes in battery voltage 
+	-Constant voltage to power the central processor
+	
+Behavior Definition
+Product States
+    -Normal Operation
+    -Push Power
+    -Reduced Power
+    -Low Voltage Cuttoff
+
+Detailed Behavior
+   Initial State: Normal Operation
+        Inveter initially OFF
+	Processor powered on by battery via regulator
+	Device connected to processor via wire
+	Device inputs an ON command
+	Inverter is turned ON
+	Processor constantly monitors input and output voltage
+   
+   State: Push Power
+	Processor sees frequency (>-1 Hz) or voltage (> -1V) sag on output
+	Processor directs inverter to push more power until frequency is >= 59.5 Hz or voltage is >= 11.75 V
+
+   State: Reduce Power
+	Processor sees frequency (>+1 Hz) or voltage (> +1V) rise on output
+	Processor directs inverter to push more power until frequency is <= 60.5 Hz or voltage is <= 12.25 V
+
+   State: Low Voltage Cutoff
+	Processor sees battery voltage is < 9.6V
+	Processor sends warning to device of low voltage every 3s
+	All operation continue as previously instructed
+	When voltage reaches 9V, Processor sends final warning 
+	Processor turnsoff inverter
+        
+Interface List
+   Processor <--> Computer
+    Characteristics
+        - Serial Monitor to display status
+	- Serial Command to control inverter
+
+Command Definition
+Command             Description                                    
+ON		    Turn on inverter ckt and being discharging
+OFF		    Turn off inverter ckt and stop discharging
+Status		    Report input and output voltage reading
+
+
+
+
